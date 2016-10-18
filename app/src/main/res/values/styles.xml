@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!--导航栏上的标题颜色-->
+        <!--<item name="android:textColorPrimary">@android:color/black</item>-->
+        <!--Activity窗口的颜色-->
+        <!--<item name="android:windowBackground">@android:color/white</item>-->
+        <!--和 colorAccent相反，正常状态下按钮的颜色-->
+        <!--<item name="colorControlNormal">@color/material_blue_grey_950</item>-->
+        <!--Button按钮正常状态颜色-->
+        <!--<item name="colorButtonNormal">@color/button_material_light</item>-->
+        <!--EditText 输入框中字体的颜色-->
+        <!--<item name="editTextColor">@android:color/white</item>-->
+        <!--<item name="android:textColorHint">@color/hint_foreground_material_dark</item>-->
+    </style>
+
+
+</resources>
