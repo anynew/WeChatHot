@@ -6,6 +6,7 @@
 
 
     <color name="colorGrayDefalt">#F0C3C1</color>
+    <color name="font_black">#333333</color>
 
 
 </resources>

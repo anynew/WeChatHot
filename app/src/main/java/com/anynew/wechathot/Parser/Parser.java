@@ -1,5 +1,6 @@
-package com.anynew.wechathot.Parser;
+package com.anynew.wechathot.parser;
 
+import com.anynew.wechathot.model.HomeSource;
 import com.anynew.wechathot.model.PicSource;
 
 import org.jsoup.Jsoup;
@@ -21,6 +22,11 @@ public class Parser {
             e.printStackTrace();
         }
     }
+
+    /**
+     *
+     * @return  轮播视图
+     */
 
     public PicSource getSource(){
 
@@ -49,9 +55,47 @@ public class Parser {
             listSource.add(urlSorcre.get(i).attr("title"));
             listTime.add(urlTime.get(i).ownText());
         }
-
         PicSource ps = new PicSource(listTitle,listLink,listImg,listSource,listTime);
         return ps;
+    }
+
+    /**
+     * 新闻列表
+     * @return
+     */
+    public HomeSource getHomeSource(){
+        Elements urlTitle;
+        Elements urlContent;
+        Elements urlIllustrator;
+
+        urlTitle = document.select(".wx-news-info2 h4 a");
+        urlContent = document.select(".wx-news-info");
+        urlIllustrator = document.select(".wx-img-box img");
+
+        List<String>  listTitle = new ArrayList<>();    //列表标题
+        List<String>  listGoto = new ArrayList<>();    //列表链接
+        List<String>  listContent = new ArrayList<>();    //列表内容
+        List<String>  listIllustrator = new ArrayList<>();    //列表插图
+
+        for (int i = 0; i < urlTitle.size(); i++) {
+
+            String title = urlTitle.get(i).ownText();
+            listTitle.add(title);
+
+            String link = urlTitle.get(i).attr("href");
+            listGoto.add(link);
+
+            String content = urlContent.get(i).ownText();
+            listContent.add(content);
+
+            String illustrator = urlIllustrator.get(i).attr("src");
+            listIllustrator.add(illustrator);
+
+            System.out.println(illustrator);
+        }
+
+        HomeSource homeSource = new HomeSource(listTitle,listContent,listIllustrator,listGoto);
+        return  homeSource;
     }
 
 }

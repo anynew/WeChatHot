@@ -10,22 +10,19 @@ import java.util.List;
 
 public class Parser {
     public static final String url = "http://weixin.sogou.com";
+    private static Document document;
 
     public static void main(String args[]){
-
-        List<String> listLink = getSource().getListImg();
-        for (int i = 0; i < listLink.size(); i++) {
-            System.out.println(listLink.get(i));
-        }
-    }
-
-    private static PicSource getSource(){
-        Document document = null;
         try {
             document = Jsoup.connect(url).get();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        getHomeSource().getListIllustrator();
+
+    }
+
+    private static PicSource getSource(){
 
         Elements urlLink;
         Elements urlTitle;
@@ -57,5 +54,43 @@ public class Parser {
         return ps;
     }
 
+    /**
+     * 新闻列表
+     * @return
+     */
+    private static HomeSource getHomeSource(){
+        Elements urlTitle;
+        Elements urlContent;
+        Elements urlIllustrator;
+
+        urlTitle = document.select(".wx-news-info2 h4 a");
+        urlContent = document.select(".wx-news-info");
+        urlIllustrator = document.select(".wx-img-box img");
+
+        List<String>  listTitle = new ArrayList<>();    //列表标题
+        List<String>  listGoto = new ArrayList<>();    //列表链接
+        List<String>  listContent = new ArrayList<>();    //列表内容
+        List<String>  listIllustrator = new ArrayList<>();    //列表插图
+
+        for (int i = 0; i < urlTitle.size(); i++) {
+
+            String title = urlTitle.get(i).ownText();
+            listTitle.add(title);
+
+            String link = urlTitle.get(i).attr("href");
+            listGoto.add(link);
+
+            String content = urlContent.get(i).ownText();
+            listContent.add(content);
+
+            String illustrator = urlIllustrator.get(i).attr("src");
+            listIllustrator.add(illustrator);
+
+            System.out.println(illustrator);
+        }
+
+        HomeSource homeSource = new HomeSource();
+        return  homeSource;
+    }
 }
 

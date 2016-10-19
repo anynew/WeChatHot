@@ -1,26 +1,24 @@
 package com.anynew.wechathot.fragment;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.os.AsyncTaskCompat;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
-import com.anynew.wechathot.Parser.Parser;
+import com.anynew.wechathot.parser.Parser;
 import com.anynew.wechathot.R;
-import com.anynew.wechathot.model.PicSource;
-import com.anynew.wechathot.network.getData;
-import com.anynew.wechathot.ui.Kanner;
-import com.zhy.http.okhttp.OkHttpUtils;
-
-import java.io.IOException;
-import java.util.List;
+import com.anynew.wechathot.model.HomeSource;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -29,9 +27,10 @@ import butterknife.ButterKnife;
 public class TabFragment extends Fragment {
 
 
-    @Bind(R.id.kanner)
-    Kanner kanner;
+    @Bind(R.id.mRecycleView)
+    RecyclerView mRecycleView;
 
+    private CommonAdapter<String> mAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_tab, container, false);
@@ -43,9 +42,8 @@ public class TabFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         int flag = getArguments().getInt("flag");
-        System.out.println("flag == === "+flag);
+        System.out.println("flag == === " + flag);
         if (flag == 0) {
-            kanner.setVisibility(View.VISIBLE);
             requestData();
         } else {
 
@@ -53,18 +51,21 @@ public class TabFragment extends Fragment {
     }
 
     public static final int MSG_LIST_COMPLETED = 1;      //LIST集合成功标志
-    public static final int MSG_COLLEGE_COMPLETED = 2;	//College对象获取成功标志
+    public static final int MSG_COLLEGE_COMPLETED = 2;    //College对象获取成功标志
     public static final int MSG_RECEIVE_OUTTIME = 3;      //超时连接
 
-    Handler handler = new Handler(){
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case MSG_LIST_COMPLETED:
-                    List<String> imgUrl = (List<String>) msg.obj;
-                    String[] urls = imgUrl.toArray(new String[imgUrl.size()]);
-                    kanner.setImagesUrl(urls);
+//                    List<String> imgUrl = (List<String>) msg.obj;
+//                    String[] urls = imgUrl.toArray(new String[imgUrl.size()]);
+//                    kanner.setImagesUrl(urls);
+                    HomeSource homeSource = (HomeSource) msg.obj;
+                    initRecycler(homeSource);
+
                     break;
                 case MSG_COLLEGE_COMPLETED:
                     break;
@@ -78,50 +79,57 @@ public class TabFragment extends Fragment {
      * 获取首页fragment的数据
      */
     private void requestData() {
+
         new ImageNetThread().start();
-        /*kanner.setImagesUrl(new String[] {
-                "http://img03.muzhiwan.com/2015/06/05/upload_557165f4850cf.png",
-                "http://img02.muzhiwan.com/2015/06/11/upload_557903dc0f165.jpg",
-                "http://img04.muzhiwan.com/2015/06/05/upload_5571659957d90.png",
-                "http://img03.muzhiwan.com/2015/06/16/upload_557fd2a8da7a3.jpg" });*/
-       /* new Thread(new Runnable() {
+
+    }
+
+    /**
+     * 初始化首页列表
+     */
+    private void initRecycler(final HomeSource homeSource) {
+        mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mAdapter = new CommonAdapter<String>(getActivity(),R.layout.item_layout_home_list,homeSource.getListTitle()) {
             @Override
-            public void run() {
-                Parser parser = new Parser();
-                PicSource source = parser.getSource();
-                List<String> imgUrl = source.getListImg();
-                urls = imgUrl.toArray(new String[imgUrl.size()]);
-                for (String s : imgUrl) {
-                    Log.e("TAG", "run: " + s);
-                }
+            protected void convert(ViewHolder holder, String s, int position) {
+                holder.setText(R.id.mTitle,homeSource.getListTitle().get(position));
+                holder.setText(R.id.mContent,homeSource.getListContent().get(position));
+                ImageView iv = holder.getView(R.id.mIllustrator);
+                Glide.with(getActivity())
+                        .load(homeSource.getListIllustrator().get(position))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(iv);
             }
-        }).start();*/
+        };
+        mRecycleView.setAdapter(mAdapter);
 
     }
-    private class ImageNetThread extends Thread{
-        @Override
-        public void run() {
-            super.run();
-            try{
-                Parser parser = new Parser();
-                PicSource source = parser.getSource();
-                List<String> imgUrl = source.getListImg();
-                handler.sendMessage(handler.obtainMessage(MSG_LIST_COMPLETED,imgUrl));
-                for (int i = 0; i < imgUrl.size(); i++) {
-                    Log.e("THeradasd", "run: " + imgUrl.get(i) );
-                }
-
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-        }
-    }
-
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
+
+    private class ImageNetThread extends Thread {
+        @Override
+        public void run() {
+            super.run();
+            try {
+                Parser parser = new Parser();
+                HomeSource homeSource = parser.getHomeSource();
+//                PicSource source = parser.getSource();
+//                List<String> imgUrl = source.getListImg();
+                handler.sendMessage(handler.obtainMessage(MSG_LIST_COMPLETED, homeSource));
+                /*for (int i = 0; i < imgUrl.size(); i++) {
+                    Log.e("THeradasd", "run: " + imgUrl.get(i));
+                }*/
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 }
