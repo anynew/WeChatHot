@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import com.anynew.wechathot.parser.Parser;
 import com.anynew.wechathot.R;
 import com.anynew.wechathot.model.HomeSource;
+import com.anynew.wechathot.ui.MyLinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.zhy.adapter.recyclerview.CommonAdapter;
@@ -89,6 +90,10 @@ public class TabFragment extends Fragment {
      */
     private void initRecycler(final HomeSource homeSource) {
         mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecycleView.setNestedScrollingEnabled(false);
+        mRecycleView.setHasFixedSize(false);
+//        mRecycleView.setLayoutManager(new MyLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, true));
+
         mAdapter = new CommonAdapter<String>(getActivity(),R.layout.item_layout_home_list,homeSource.getListTitle()) {
             @Override
             protected void convert(ViewHolder holder, String s, int position) {
