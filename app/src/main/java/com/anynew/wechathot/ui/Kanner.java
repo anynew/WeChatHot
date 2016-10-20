@@ -1,6 +1,7 @@
 package com.anynew.wechathot.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -13,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.anynew.wechathot.R;
 import com.bumptech.glide.Glide;
@@ -23,7 +25,6 @@ import java.util.List;
 
 public class Kanner extends FrameLayout {
     private int count;
-//    private ImageLoader mImageLoader;
     private List<ImageView> imageViews;
     private Context context;
     private ViewPager vp;
@@ -32,13 +33,12 @@ public class Kanner extends FrameLayout {
     private int delayTime;
     private LinearLayout ll_dot;
     private List<ImageView> iv_dots;
+    private List<TextView> textViews;
     private Handler handler = new Handler();
-//    private DisplayImageOptions options;
 
     public Kanner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.context = context;
-        initImageLoader(context);
         initData();
     }
 
@@ -52,15 +52,17 @@ public class Kanner extends FrameLayout {
 
     private void initData() {
         imageViews = new ArrayList<ImageView>();
+        textViews = new ArrayList<>();
         iv_dots = new ArrayList<ImageView>();
         delayTime = 2000;
     }
 
-    public void setImagesUrl(String[] imagesUrl) {
+    public void setImagesUrl(String[] imagesUrl,List<String> textsUrl) {
         initLayout();
-        initImgFromNet(imagesUrl);
+        initImgFromNet(imagesUrl,textsUrl);
         showTime();
     }
+
 
     public void setImagesRes(int[] imagesRes) {
         initLayout();
@@ -81,6 +83,7 @@ public class Kanner extends FrameLayout {
         count = imagesRes.length;
         for (int i = 0; i < count; i++) {
             ImageView iv_dot = new ImageView(context);
+
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -104,10 +107,12 @@ public class Kanner extends FrameLayout {
                 iv.setImageResource(imagesRes[i - 1]);
             }
             imageViews.add(iv);
+
         }
+
     }
 
-    private void initImgFromNet(String[] imagesUrl) {
+    private void initImgFromNet(String[] imagesUrl,List<String> textsUrl) {
         count = imagesUrl.length;
         for (int i = 0; i < count; i++) {
             ImageView iv_dot = new ImageView(context);
@@ -123,36 +128,48 @@ public class Kanner extends FrameLayout {
         iv_dots.get(0).setImageResource(R.mipmap.dot_focus);
 
         for (int i = 0; i <= count + 1; i++) {
+            //添加图片
             ImageView iv = new ImageView(context);
+            //添加文字描述
+            TextView tv = new TextView(context);
+
             iv.setScaleType(ScaleType.FIT_XY);
-//            iv.setBackgroundResource(R.mipmap.loading);
+
+            tv.setTextColor(Color.WHITE);
+
             if (i == 0) {
-//                mImageLoader.displayImage(imagesUrl[count - 1], iv, options);
+                tv.setText(textsUrl.get(count -1));
                 Glide.with(context)
                         .load(imagesUrl[count -1])
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
             } else if (i == count + 1) {
-//                mImageLoader.displayImage(imagesUrl[0], iv, options);
+                tv.setText(textsUrl.get(0));
                 Glide.with(context)
                         .load(imagesUrl[0])
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
 
             } else {
-//                mImageLoader.displayImage(imagesUrl[i - 1], iv, options);
+                tv.setText(textsUrl.get(i -1));
                 Glide.with(context)
                         .load(imagesUrl[i -1])
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
 
             }
+            textViews.add(tv);
             imageViews.add(iv);
         }
     }
 
+    private void initDescribeFromNet(String[] textUrl){
+        count = textUrl.length;
+    }
+
     private void showTime() {
-        vp.setAdapter(new KannerPagerAdapter());
+        KannerPagerAdapter adapter = new KannerPagerAdapter();
+        vp.setAdapter(adapter);
         vp.setFocusable(true);
         vp.setCurrentItem(1);
         currentItem = 1;
@@ -163,22 +180,6 @@ public class Kanner extends FrameLayout {
     private void startPlay() {
         isAutoPlay = true;
         handler.postDelayed(task, 2000);
-    }
-
-    public void initImageLoader(Context context) {
-
-      /*  ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-                context).threadPriority(Thread.NORM_PRIORITY - 2)
-                .denyCacheImageMultipleSizesInMemory()
-                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
-                .tasksProcessingOrder(QueueProcessingType.LIFO)
-                .writeDebugLogs().build();
-        ImageLoader.getInstance().init(config);
-        options = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
-        mImageLoader = ImageLoader.getInstance();*/
     }
 
     private final Runnable task = new Runnable() {

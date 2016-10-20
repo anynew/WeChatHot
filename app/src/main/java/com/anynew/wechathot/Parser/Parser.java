@@ -17,7 +17,6 @@ public class Parser {
     public Parser() {
         try {
             document = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 6.1; rv:22.0) Gecko/20100101 Firefox/22.0").timeout(8000).get();
-            System.out.println("文档已加载");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,7 +27,7 @@ public class Parser {
      * @return  轮播视图
      */
 
-    public PicSource getSource(){
+    public PicSource getPicSource(){
 
         Elements urlLink;
         Elements urlTitle;
@@ -91,7 +90,6 @@ public class Parser {
             String illustrator = urlIllustrator.get(i).attr("src");
             listIllustrator.add(illustrator);
 
-            System.out.println(illustrator);
         }
 
         HomeSource homeSource = new HomeSource(listTitle,listContent,listIllustrator,listGoto);

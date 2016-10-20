@@ -1,44 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="100dp">
 
     <ImageView
         android:id="@+id/mIllustrator"
         android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentEnd="true"
+        android:layout_height="80dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
         android:scaleType="fitXY" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <RelativeLayout
         android:layout_toLeftOf="@id/mIllustrator"
-        android:orientation="vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/mTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:text="[荐读]人生10大忌，千万不能犯!(建议都看看)"
-            android:textColor="@color/font_black"
-            android:textSize="16sp" />
+        <RelativeLayout
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/mTitle"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[荐读]人生10大忌，千万不能犯!(建议都看看)"
+                android:textColor="@color/font_black"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/mViews"
+                android:text="阅读:10000+"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/mTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/mContent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:paddingLeft="10dp"
-            android:paddingTop="10dp"
-            android:text="总感慨自己“时运不济”、“命不好”？但你想没想过，其实是你总犯些“绝不能犯的错”！！下面这人生10大忌，你中了几个？赶紧看看吧↓↓" />
-    </LinearLayout>
+            <TextView
+                android:text="火影忍者"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_alignBaseline="@id/mViews"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/mTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+
+    </RelativeLayout>
 
 
 </RelativeLayout>
