@@ -1,6 +1,9 @@
 package com.anynew.wechathot.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.provider.Settings;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -16,11 +19,12 @@ import android.widget.Toast;
 import com.anynew.wechathot.R;
 import com.anynew.wechathot.fragment.TabFragment;
 import com.anynew.wechathot.adapter.TabFragmentAdapter;
+import com.anynew.wechathot.utils.SnackbarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
+public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener, TabFragment.OnNotifyListener {
 
     private Toolbar toolbar;
     private FloatingActionButton fab;
@@ -37,7 +41,9 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
         initFab();
         initToolbar();
         initTabLayout();
+
     }
+
 
     /**
      * 初始化悬浮Fab按钮
@@ -100,7 +106,7 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
         for (int i = 0; i < tabList.size(); i++) {
             Fragment f = new TabFragment();
             Bundle bundle = new Bundle();
-            bundle.putInt("flag",i);
+            bundle.putInt("flag", i);
             f.setArguments(bundle);
             fragmentList.add(f);
         }
@@ -108,7 +114,6 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
         TabFragmentAdapter fragmentAdapter = new TabFragmentAdapter(getSupportFragmentManager(), fragmentList, tabList);
         viewPager.setAdapter(fragmentAdapter);//给ViewPager设置适配器
         tabLayout.setupWithViewPager(viewPager);//将TabLayout和ViewPager关联起来。
-
     }
 
     @Override
@@ -146,5 +151,18 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onSnack(String tips) {
+        CoordinatorLayout v = findView(R.id.main_content);
+        final Snackbar snackbar = Snackbar.make(v, tips, Snackbar.LENGTH_LONG);
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorAccent));
+        snackbar.show();
+        snackbar.setAction("点击设置", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(android.provider.Settings.ACTION_DATA_ROAMING_SETTINGS));            }
+        });
     }
 }

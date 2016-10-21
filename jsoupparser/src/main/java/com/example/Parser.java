@@ -15,11 +15,13 @@ public class Parser {
     public static void main(String args[]){
         try {
             document = Jsoup.connect(url).get();
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        getHomeSource().getListIllustrator();
-
+        getHomeSource().getListViews();
     }
 
     private static PicSource getSource(){
@@ -60,17 +62,20 @@ public class Parser {
      */
     private static HomeSource getHomeSource(){
         Elements urlTitle;
-        Elements urlContent;
+        Elements urlViews;
         Elements urlIllustrator;
+        Elements urlFrom;
 
         urlTitle = document.select(".wx-news-info2 h4 a");
-        urlContent = document.select(".wx-news-info");
         urlIllustrator = document.select(".wx-img-box img");
+        urlViews = document.select(".s-p");
+        urlFrom = document.select(".pos-wxrw a");
 
         List<String>  listTitle = new ArrayList<>();    //列表标题
         List<String>  listGoto = new ArrayList<>();    //列表链接
-        List<String>  listContent = new ArrayList<>();    //列表内容
+        List<String>  listViews = new ArrayList<>();    //列表内容
         List<String>  listIllustrator = new ArrayList<>();    //列表插图
+        List<String>  listFrom = new ArrayList<>();    //列表来源
 
         for (int i = 0; i < urlTitle.size(); i++) {
 
@@ -80,16 +85,20 @@ public class Parser {
             String link = urlTitle.get(i).attr("href");
             listGoto.add(link);
 
-            String content = urlContent.get(i).ownText();
-            listContent.add(content);
+            String views = urlViews.get(i).ownText();
+            listViews.add(views);
 
             String illustrator = urlIllustrator.get(i).attr("src");
             listIllustrator.add(illustrator);
 
-            System.out.println(illustrator);
+            urlFrom.remove(i +1);
+            String from = urlFrom.get(i).text();
+            listFrom.add(from);
+
+            System.out.println(views);
         }
 
-        HomeSource homeSource = new HomeSource();
+        HomeSource homeSource = new HomeSource(listTitle,listFrom,listIllustrator,listGoto,listViews);
         return  homeSource;
     }
 }

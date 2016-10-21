@@ -32,11 +32,6 @@
     </android.support.design.widget.AppBarLayout>
 
     <!--可滑动的布局内容-->
-    <android.support.v4.view.ViewPager
-        android:id="@+id/mViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -44,7 +39,15 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         app:borderWidth="0dp"
+        app:pressedTranslationZ="@dimen/fab_elevation_pressed"
+        app:elevation="@dimen/fab_elevation"
         android:layout_margin="@dimen/fab_margin"
         android:src="@mipmap/ic_discuss" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/mViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </android.support.design.widget.CoordinatorLayout>
