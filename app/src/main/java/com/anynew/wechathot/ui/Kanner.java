@@ -33,7 +33,6 @@ public class Kanner extends FrameLayout {
     private int delayTime;
     private LinearLayout ll_dot;
     private List<ImageView> iv_dots;
-    private List<TextView> textViews;
     private Handler handler = new Handler();
 
     public Kanner(Context context, AttributeSet attrs, int defStyle) {
@@ -52,7 +51,6 @@ public class Kanner extends FrameLayout {
 
     private void initData() {
         imageViews = new ArrayList<ImageView>();
-        textViews = new ArrayList<>();
         iv_dots = new ArrayList<ImageView>();
         delayTime = 2000;
     }
@@ -130,35 +128,28 @@ public class Kanner extends FrameLayout {
         for (int i = 0; i <= count + 1; i++) {
             //添加图片
             ImageView iv = new ImageView(context);
-            //添加文字描述
-            TextView tv = new TextView(context);
 
             iv.setScaleType(ScaleType.FIT_XY);
 
-            tv.setTextColor(Color.WHITE);
 
             if (i == 0) {
-                tv.setText(textsUrl.get(count -1));
                 Glide.with(context)
                         .load(imagesUrl[count -1])
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
             } else if (i == count + 1) {
-                tv.setText(textsUrl.get(0));
                 Glide.with(context)
                         .load(imagesUrl[0])
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
 
             } else {
-                tv.setText(textsUrl.get(i -1));
                 Glide.with(context)
                         .load(imagesUrl[i -1])
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
 
             }
-            textViews.add(tv);
             imageViews.add(iv);
         }
     }

@@ -37,16 +37,4 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected abstract void initView();
 
-    public boolean isDestroy = false;
-    public void showToast(String msg){
-        if (isDestroy)
-            return;
-        Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
-    }
-
-    public void showToastLong(String msg){
-        if (isDestroy)
-            return;
-        Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_LONG).show();
-    }
 }

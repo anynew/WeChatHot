@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,9 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anynew.wechathot.R;
+import com.anynew.wechathot.adapter.DividerItemDecoration;
 import com.anynew.wechathot.model.HomeSource;
 import com.anynew.wechathot.model.PicSource;
 import com.anynew.wechathot.parser.Parser;
@@ -23,9 +26,12 @@ import com.anynew.wechathot.ui.Kanner;
 import com.anynew.wechathot.utils.NetUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.github.ybq.android.spinkit.SpinKitView;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
+import com.zhy.adapter.recyclerview.wrapper.EmptyWrapper;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
+import com.zhy.adapter.recyclerview.wrapper.LoadMoreWrapper;
 
 import java.util.List;
 
@@ -44,6 +50,10 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
 
     private HeaderAndFooterWrapper mHeaderAndFooterWrapper;
 
+    private LoadMoreWrapper mLoadMoreWrapper;
+
+    private EmptyWrapper mEmptyWrapper;
+
     private String TAG = this.getClass().getSimpleName();
 
     @Override
@@ -61,9 +71,10 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         //flag = 0代表获取到的首页fragment
         if (flag == 0) {
             if (NetUtils.isConnected(getActivity())) {
+
                 initSwipeRefresh();
                 requestData();
-            }else {
+            } else {
                 //无网络处理
                 showSnack();
                 mSwipeRefresh.setOnRefreshListener(this);
@@ -87,9 +98,9 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
      * 获取首页fragment的数据
      */
     private void requestData() {
-        if (NetUtils.isConnected(getActivity())){
+        if (NetUtils.isConnected(getActivity())) {
             new ImageNetThread().start();
-        }else{
+        } else {
             mSwipeRefresh.setRefreshing(false);
         }
     }
@@ -101,7 +112,7 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onRefresh() {
         requestData();
-        if (!NetUtils.isConnected(getActivity())){
+        if (!NetUtils.isConnected(getActivity())) {
             showSnack();
         }
     }
@@ -138,7 +149,6 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                     mSwipeRefresh.setRefreshing(false);
                     Parser parser = (Parser) msg.obj;
                     initRecycler(parser);
-
                     break;
                 case MSG_RECEIVE_OUTTIME:
                     Toast.makeText(getActivity(), "获取超时", Toast.LENGTH_SHORT).show();
@@ -181,11 +191,26 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         String[] urls = imgUrl.toArray(new String[imgUrl.size()]);
         kanner.setImagesUrl(urls, listTitle);
 
+        //设置LoadMore
+        View loadMore = LayoutInflater.from(getActivity()).inflate(R.layout.layout_loadmore, null);
+        SpinKitView mProgressBar = (SpinKitView) loadMore.findViewById(R.id.mProgressBar);
+
         mHeaderAndFooterWrapper = new HeaderAndFooterWrapper(mAdapter);
         mHeaderAndFooterWrapper.addHeaderView(headView);
-        mRecycleView.setAdapter(mHeaderAndFooterWrapper);
-        mHeaderAndFooterWrapper.notifyDataSetChanged();
+
+        mLoadMoreWrapper = new LoadMoreWrapper(mHeaderAndFooterWrapper);
+        mLoadMoreWrapper.setLoadMoreView(loadMore);
+
+        mEmptyWrapper  = new EmptyWrapper(mLoadMoreWrapper);
+        mRecycleView.setAdapter(mEmptyWrapper);
+        mEmptyWrapper.notifyDataSetChanged();
+
+        //添加分割线
+        mRecycleView.addItemDecoration(new DividerItemDecoration(
+                getActivity(), DividerItemDecoration.VERTICAL_LIST));
+
     }
+
 
     @Override
     public void onDestroyView() {
@@ -215,7 +240,6 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     }
 
     /***
-     *
      * 下面代码用与宿主Activity进行通信
      *
      * @param activity
@@ -225,9 +249,9 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof OnNotifyListener){
+        if (activity instanceof OnNotifyListener) {
             onNotifyListener = (OnNotifyListener) activity;
-        }else{
+        } else {
             throw new IllegalArgumentException("activity must implements OnNotifyListener");
         }
     }
@@ -240,7 +264,8 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
 
     private OnNotifyListener onNotifyListener;
 
-    public interface OnNotifyListener{
-         void onSnack(String tips);
+    public interface OnNotifyListener {
+        void onSnack(String tips);
     }
+
 }

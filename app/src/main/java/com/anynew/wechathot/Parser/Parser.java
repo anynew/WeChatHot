@@ -2,6 +2,7 @@ package com.anynew.wechathot.parser;
 
 import com.anynew.wechathot.model.HomeSource;
 import com.anynew.wechathot.model.PicSource;
+import com.anynew.wechathot.network.getData;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,11 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
-    public static final String url = "http://weixin.sogou.com";
+
     Document document;
+    Document documentMore_1;
     public Parser() {
         try {
-            document = Jsoup.connect(url).userAgent("Mozilla/5.0 (Windows NT 6.1; rv:22.0) Gecko/20100101 Firefox/22.0").timeout(8000).get();
+            document = Jsoup.connect(getData.URL_WECHAT).userAgent("Mozilla/5.0 (Windows NT 6.1; rv:22.0) Gecko/20100101 Firefox/22.0").timeout(8000).get();
+            documentMore_1 = Jsoup.connect(getData.HOME_LOAD_MORE_1).userAgent("Mozilla/5.0 (Windows NT 6.1; rv:22.0) Gecko/20100101 Firefox/22.0").timeout(8000).get();
         } catch (IOException e) {
             e.printStackTrace();
         }
