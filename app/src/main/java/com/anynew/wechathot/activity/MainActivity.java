@@ -154,15 +154,19 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
     }
 
     @Override
-    public void onSnack(String tips) {
+    public void onSnack(int flag,String tips) {
         CoordinatorLayout v = findView(R.id.main_content);
         final Snackbar snackbar = Snackbar.make(v, tips, Snackbar.LENGTH_LONG);
         snackbar.setActionTextColor(getResources().getColor(R.color.colorAccent));
         snackbar.show();
-        snackbar.setAction("点击设置", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(android.provider.Settings.ACTION_DATA_ROAMING_SETTINGS));            }
-        });
+        if (flag == 0){
+            return;
+        }else if (flag == 1){
+            snackbar.setAction("点击设置", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(android.provider.Settings.ACTION_DATA_ROAMING_SETTINGS));            }
+            });
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.anynew.wechathot.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anynew.wechathot.R;
+import com.anynew.wechathot.activity.WxContentActivity;
 import com.anynew.wechathot.adapter.DividerItemDecoration;
 import com.anynew.wechathot.model.HomeSource;
 import com.anynew.wechathot.model.PicSource;
@@ -71,7 +73,6 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         //flag = 0代表获取到的首页fragment
         if (flag == 0) {
             if (NetUtils.isConnected(getActivity())) {
-
                 initSwipeRefresh();
                 requestData();
             } else {
@@ -90,7 +91,7 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
      */
     private void showSnack() {
         if (onNotifyListener != null) {
-            onNotifyListener.onSnack("(⊙ ︿ ⊙)  网络开小差了");
+            onNotifyListener.onSnack(1,"(⊙ ︿ ⊙)  网络开小差了");
         }
     }
 
@@ -172,10 +173,17 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
 
         mAdapter = new CommonAdapter<String>(getActivity(), R.layout.item_layout_home_list, homeSource.getListTitle()) {
             @Override
-            protected void convert(ViewHolder holder, String s, int position) {
+            protected void convert(ViewHolder holder, String s, final int position) {
                 holder.setText(R.id.mTitle, homeSource.getListTitle().get(position - 1));
                 holder.setText(R.id.mViews, homeSource.getListViews().get(position - 1));
                 holder.setText(R.id.mTvFrom, homeSource.getListFrom().get(position - 1));
+                holder.setOnClickListener(R.id.mItem, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        onNotifyListener.onSnack(0,"pos = "+(position-1));
+                        Intent intent = new Intent(getActivity(), WxContentActivity.class);
+                    }
+                });
                 ImageView iv = holder.getView(R.id.mIllustrator);
                 Glide.with(getActivity())
                         .load(homeSource.getListIllustrator().get(position - 1))
@@ -265,7 +273,8 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     private OnNotifyListener onNotifyListener;
 
     public interface OnNotifyListener {
-        void onSnack(String tips);
+        //flag代表传入snackbar是否纯文本及类型
+        void onSnack(int flag,String tips);
     }
 
 }
