@@ -4,4 +4,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.Toolbar>
+
+    <com.tencent.smtt.sdk.WebView
+        android:id="@+id/mTencentWeb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </com.tencent.smtt.sdk.WebView>
 </LinearLayout>

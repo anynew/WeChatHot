@@ -182,6 +182,8 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                     public void onClick(View v) {
                         onNotifyListener.onSnack(0,"pos = "+(position-1));
                         Intent intent = new Intent(getActivity(), WxContentActivity.class);
+                        intent.putExtra("urlLink",homeSource.getListGoto().get(position-1));
+                        startActivity(intent);
                     }
                 });
                 ImageView iv = holder.getView(R.id.mIllustrator);

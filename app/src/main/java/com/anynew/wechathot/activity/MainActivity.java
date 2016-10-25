@@ -2,14 +2,16 @@ package com.anynew.wechathot.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,39 +19,50 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.anynew.wechathot.R;
-import com.anynew.wechathot.fragment.TabFragment;
 import com.anynew.wechathot.adapter.TabFragmentAdapter;
-import com.anynew.wechathot.utils.SnackbarUtil;
+import com.anynew.wechathot.fragment.TabFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener, TabFragment.OnNotifyListener {
-
-    private Toolbar toolbar;
-    private FloatingActionButton fab;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
+    @Bind(R.id.mViewPager)
+    ViewPager viewPager;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.tabs)
+    TabLayout tabLayout;
+    @Bind(R.id.appbar)
+    AppBarLayout appbar;
+    @Bind(R.id.main_content)
+    CoordinatorLayout mainContent;
 
     @Override
-    protected int getContentView() {
-        return R.layout.activity_main;
-    }
-
-    @Override
-    protected void initView() {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         initFab();
         initToolbar();
         initTabLayout();
-
     }
+
+   /* @Override
+    protected void initView() {
+
+
+    }*/
 
 
     /**
      * 初始化悬浮Fab按钮
      */
     private void initFab() {
-        fab = findView(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,7 +80,7 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
     }
 
     private void initToolbar() {
-        toolbar = findView(R.id.toolbar);
+//        toolbar = findView(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("微信精选");
@@ -80,8 +93,6 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
     }
 
     private void initTabLayout() {
-        viewPager = findView(R.id.mViewPager);
-        tabLayout = findView(R.id.tabs);
         List<String> tabList = new ArrayList<>();
         tabList.add("热门");
         tabList.add("推荐");
@@ -154,18 +165,18 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
     }
 
     @Override
-    public void onSnack(int flag,String tips) {
-        CoordinatorLayout v = findView(R.id.main_content);
-        final Snackbar snackbar = Snackbar.make(v, tips, Snackbar.LENGTH_LONG);
+    public void onSnack(int flag, String tips) {
+        final Snackbar snackbar = Snackbar.make(mainContent, tips, Snackbar.LENGTH_LONG);
         snackbar.setActionTextColor(getResources().getColor(R.color.colorAccent));
         snackbar.show();
-        if (flag == 0){
+        if (flag == 0) {
             return;
-        }else if (flag == 1){
+        } else if (flag == 1) {
             snackbar.setAction("点击设置", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(android.provider.Settings.ACTION_DATA_ROAMING_SETTINGS));            }
+                    startActivity(new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS));
+                }
             });
         }
     }
