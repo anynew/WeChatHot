@@ -52,13 +52,6 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
         initTabLayout();
     }
 
-   /* @Override
-    protected void initView() {
-
-
-    }*/
-
-
     /**
      * 初始化悬浮Fab按钮
      */
@@ -80,7 +73,6 @@ public class MainActivity extends BaseActivity implements Toolbar.OnMenuItemClic
     }
 
     private void initToolbar() {
-//        toolbar = findView(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         toolbar.setTitle("微信精选");

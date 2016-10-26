@@ -1,11 +1,18 @@
 package com.anynew.wechathot.activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
 import com.anynew.wechathot.R;
-import com.tencent.smtt.sdk.WebSettings;
-import com.tencent.smtt.sdk.WebView;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -16,9 +23,12 @@ import butterknife.ButterKnife;
 
 public class WxContentActivity extends BaseActivity {
 
-
-    @Bind(R.id.mTencentWeb)
-    WebView mTencentWeb;
+    @Bind(R.id.mWebview)
+    WebView mWebview;
+    @Bind(R.id.mToolBar)
+    Toolbar mToolBar;
+    @Bind(R.id.mTopImg)
+    ImageView mTopImg;
     private String TAG = this.getClass().getSimpleName();
 
     @Override
@@ -27,20 +37,46 @@ public class WxContentActivity extends BaseActivity {
         // TODO: add setContentView(...) invocation
         setContentView(R.layout.activity_wx_content);
         ButterKnife.bind(this);
-
+        initToolBar();
+        initTopImg();
         initWeb();
     }
 
+    private void initTopImg() {
+        Glide.with(this)
+                .load(getIntent().getStringExtra("img"))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(mTopImg);
+    }
+
+    private void initToolBar() {
+        setSupportActionBar(mToolBar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        mToolBar.setTitle(getIntent().getStringExtra("source"));
+//        mToolBar.setTitleTextColor(Color.WHITE);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
     private void initWeb() {
+
         String urlLink = getIntent().getStringExtra("urlLink");
-        mTencentWeb.loadUrl(urlLink);
-//        String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36";
-        String userAgent = "AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/45.0.2454.94 Mobile Safari/537.36";
-        WebSettings settings = mTencentWeb.getSettings();
-        settings.setUserAgent(userAgent);
+        mWebview.loadUrl(urlLink);
+        WebSettings settings = mWebview.getSettings();
         settings.setJavaScriptEnabled(true);
-        settings.setUserAgentString(userAgent);
         settings.setDomStorageEnabled(true);
+        mWebview.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+        });
         Log.e(TAG, "urlLink: " + urlLink);
     }
 }

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anynew.wechathot.R;
@@ -173,7 +171,7 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
 
         mAdapter = new CommonAdapter<String>(getActivity(), R.layout.item_layout_home_list, homeSource.getListTitle()) {
             @Override
-            protected void convert(ViewHolder holder, String s, final int position) {
+            protected void convert(final ViewHolder holder, String s, final int position) {
                 holder.setText(R.id.mTitle, homeSource.getListTitle().get(position - 1));
                 holder.setText(R.id.mViews, homeSource.getListViews().get(position - 1));
                 holder.setText(R.id.mTvFrom, homeSource.getListFrom().get(position - 1));
@@ -183,6 +181,8 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                         onNotifyListener.onSnack(0,"pos = "+(position-1));
                         Intent intent = new Intent(getActivity(), WxContentActivity.class);
                         intent.putExtra("urlLink",homeSource.getListGoto().get(position-1));
+                        intent.putExtra("source",homeSource.getListFrom().get(position -1));
+                        intent.putExtra("img",homeSource.getListIllustrator().get(position -1));
                         startActivity(intent);
                     }
                 });
