@@ -23,7 +23,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.TestActivity"/>
-        <activity android:name=".activity.WxContentActivity"/>
+
+        <activity android:name=".activity.WxContentActivity"
+            android:theme="@style/AppTheme.TransparentActivity"/>
     </application>
 
 

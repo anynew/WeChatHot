@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,6 +24,7 @@ import com.anynew.wechathot.model.HomeSource;
 import com.anynew.wechathot.model.PicSource;
 import com.anynew.wechathot.parser.Parser;
 import com.anynew.wechathot.ui.Kanner;
+import com.anynew.wechathot.utils.Constant;
 import com.anynew.wechathot.utils.NetUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -39,7 +41,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, Kanner.OnItemClickListener {
 
     @Bind(R.id.mRecycleView)
     RecyclerView mRecycleView;
@@ -162,10 +164,13 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
      * 初始化首页列表
      */
     private void initRecycler(final Parser parser) {
-        final HomeSource homeSource = parser.getHomeSource();
+        //轮播实体
         final PicSource picSource = parser.getPicSource();
+        //首页新闻列表实体
+        final HomeSource homeSource = parser.getHomeSource();
 
         mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecycleView.setItemAnimator(new DefaultItemAnimator());
         mRecycleView.setNestedScrollingEnabled(false);
         mRecycleView.setHasFixedSize(false);
 
@@ -178,8 +183,14 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                 holder.setOnClickListener(R.id.mItem, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onNotifyListener.onSnack(0,"pos = "+(position-1));
+//                        onNotifyListener.onSnack(0,"pos = "+(position-1));
                         Intent intent = new Intent(getActivity(), WxContentActivity.class);
+
+                        int[] startingLocation = new int[2];
+                        v.getLocationOnScreen(startingLocation);
+                        startingLocation[0] += v.getWidth() / 2;
+
+                        intent.putExtra(Constant.START_LOCATION, startingLocation);
                         intent.putExtra("urlLink",homeSource.getListGoto().get(position-1));
                         intent.putExtra("source",homeSource.getListFrom().get(position -1));
                         intent.putExtra("img",homeSource.getListIllustrator().get(position -1));
@@ -196,10 +207,8 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         //设置HeadView
         View headView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_headview, null);
         Kanner kanner = (Kanner) headView.findViewById(R.id.kanner);
-        List<String> imgUrl = picSource.getListImg();
-        List<String> listTitle = picSource.getListTitle();
-        String[] urls = imgUrl.toArray(new String[imgUrl.size()]);
-        kanner.setImagesUrl(urls, listTitle);
+        kanner.setTopEntities(picSource);
+        kanner.setOnItemClickListener(this);
 
         //设置LoadMore
         View loadMore = LayoutInflater.from(getActivity()).inflate(R.layout.layout_loadmore, null);
@@ -226,6 +235,21 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void click(View v, int position, PicSource picSource) {
+        Intent intent = new Intent(getActivity(),WxContentActivity.class);
+        Log.e(TAG, "click: " + picSource.getListImg().get(position));
+        int[] startingLocation = new int[2];
+        v.getLocationOnScreen(startingLocation);
+        startingLocation[0] += v.getWidth() / 2;
+
+        intent.putExtra(Constant.START_LOCATION, startingLocation);
+        intent.putExtra("urlLink",picSource.getListLink().get(position));
+        intent.putExtra("source",picSource.getListSource().get(position));
+        intent.putExtra("img",picSource.getListImg().get(position));
+        startActivity(intent);
     }
 
 
