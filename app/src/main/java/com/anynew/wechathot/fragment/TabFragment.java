@@ -31,11 +31,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
-import com.zhy.adapter.recyclerview.wrapper.EmptyWrapper;
 import com.zhy.adapter.recyclerview.wrapper.HeaderAndFooterWrapper;
 import com.zhy.adapter.recyclerview.wrapper.LoadMoreWrapper;
-
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -47,14 +44,14 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
     RecyclerView mRecycleView;
     @Bind(R.id.mSwipeRefresh)
     SwipeRefreshLayout mSwipeRefresh;
+//    @Bind(R.id.mNestedScrollView)
+//    NestedScrollView mNestedScrollView;
 
     private CommonAdapter<String> mAdapter;
 
     private HeaderAndFooterWrapper mHeaderAndFooterWrapper;
 
     private LoadMoreWrapper mLoadMoreWrapper;
-
-    private EmptyWrapper mEmptyWrapper;
 
     private String TAG = this.getClass().getSimpleName();
 
@@ -73,6 +70,33 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         //flag = 0代表获取到的首页fragment
         if (flag == 0) {
             if (NetUtils.isConnected(getActivity())) {
+
+              /*  mNestedScrollView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()){
+                            case MotionEvent.ACTION_UP:
+
+                                if (mNestedScrollView.getChildAt(0).getMeasuredHeight() <= mNestedScrollView.getHeight() + mNestedScrollView.getScrollY()){
+                                    Log.e(TAG, "onTouch: 底部");
+                                    Log.e(TAG, "onTouch: " +  "mNestedScrollView.getChildAt(0).getMeasuredHeight() = " + mNestedScrollView.getChildAt(0).getMeasuredHeight()
+                                            +"\n"+"mNestedScrollView.getHeight() = " +mNestedScrollView.getHeight()
+                                            + "\n" + "mNestedScrollView ScrollY = " +mNestedScrollView.getScrollY());
+
+                                }
+                                break;
+                            case MotionEvent.ACTION_DOWN:
+
+                                break;
+                            case MotionEvent.ACTION_MOVE:
+
+
+                                break;
+                        }
+                        return false;
+
+                    }
+                });*/
                 initSwipeRefresh();
                 requestData();
             } else {
@@ -91,7 +115,7 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
      */
     private void showSnack() {
         if (onNotifyListener != null) {
-            onNotifyListener.onSnack(1,"(⊙ ︿ ⊙)  网络开小差了");
+            onNotifyListener.onSnack(1, "(⊙ ︿ ⊙)  网络开小差了");
         }
     }
 
@@ -174,6 +198,7 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         mRecycleView.setNestedScrollingEnabled(false);
         mRecycleView.setHasFixedSize(false);
 
+
         mAdapter = new CommonAdapter<String>(getActivity(), R.layout.item_layout_home_list, homeSource.getListTitle()) {
             @Override
             protected void convert(final ViewHolder holder, String s, final int position) {
@@ -183,7 +208,7 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                 holder.setOnClickListener(R.id.mItem, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        onNotifyListener.onSnack(0,"pos = "+(position-1));
+
                         Intent intent = new Intent(getActivity(), WxContentActivity.class);
 
                         int[] startingLocation = new int[2];
@@ -191,9 +216,9 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                         startingLocation[0] += v.getWidth() / 2;
 
                         intent.putExtra(Constant.START_LOCATION, startingLocation);
-                        intent.putExtra("urlLink",homeSource.getListGoto().get(position-1));
-                        intent.putExtra("source",homeSource.getListFrom().get(position -1));
-                        intent.putExtra("img",homeSource.getListIllustrator().get(position -1));
+                        intent.putExtra("urlLink", homeSource.getListGoto().get(position - 1));
+                        intent.putExtra("source", homeSource.getListFrom().get(position - 1));
+                        intent.putExtra("img", homeSource.getListIllustrator().get(position - 1));
                         startActivity(intent);
                     }
                 });
@@ -219,10 +244,14 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
 
         mLoadMoreWrapper = new LoadMoreWrapper(mHeaderAndFooterWrapper);
         mLoadMoreWrapper.setLoadMoreView(loadMore);
+        mLoadMoreWrapper.setOnLoadMoreListener(new LoadMoreWrapper.OnLoadMoreListener() {
+            @Override
+            public void onLoadMoreRequested() {
+                Log.e(TAG, "onLoadMoreRequested: is" );
+            }
+        });
 
-        mEmptyWrapper  = new EmptyWrapper(mLoadMoreWrapper);
-        mRecycleView.setAdapter(mEmptyWrapper);
-        mEmptyWrapper.notifyDataSetChanged();
+        mRecycleView.setAdapter(mLoadMoreWrapper);
 
         //添加分割线
         mRecycleView.addItemDecoration(new DividerItemDecoration(
@@ -239,16 +268,16 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
 
     @Override
     public void click(View v, int position, PicSource picSource) {
-        Intent intent = new Intent(getActivity(),WxContentActivity.class);
+        Intent intent = new Intent(getActivity(), WxContentActivity.class);
         Log.e(TAG, "click: " + picSource.getListImg().get(position));
         int[] startingLocation = new int[2];
         v.getLocationOnScreen(startingLocation);
         startingLocation[0] += v.getWidth() / 2;
 
         intent.putExtra(Constant.START_LOCATION, startingLocation);
-        intent.putExtra("urlLink",picSource.getListLink().get(position));
-        intent.putExtra("source",picSource.getListSource().get(position));
-        intent.putExtra("img",picSource.getListImg().get(position));
+        intent.putExtra("urlLink", picSource.getListLink().get(position));
+        intent.putExtra("source", picSource.getListSource().get(position));
+        intent.putExtra("img", picSource.getListImg().get(position));
         startActivity(intent);
     }
 
@@ -300,7 +329,7 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
 
     public interface OnNotifyListener {
         //flag代表传入snackbar是否纯文本及类型
-        void onSnack(int flag,String tips);
+        void onSnack(int flag, String tips);
     }
 
 }

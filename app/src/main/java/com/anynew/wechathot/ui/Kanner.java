@@ -236,15 +236,4 @@ public class Kanner extends FrameLayout {
         void click(View v,int position, PicSource picSource);
     }
 
-
-     /* @Override
-    public void onClick(View v) {
-          Log.d("Clock", "onClick: " + vp.getCurrentItem());
-       *//* if (mItemClickListener != null) {
-            vp.getCurrentItem();
-            PicSource entity = topEntities.getListImg()
-            mItemClickListener.click(v, entity);
-        }*//*
-    }*/
-
 }

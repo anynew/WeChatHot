@@ -11,8 +11,11 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AnticipateInterpolator;
 import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 /**
  * Created by Miroslaw Stanek on 18.01.15.
@@ -22,7 +25,7 @@ public class RevealBackgroundView extends View {
     public static final int STATE_FILL_STARTED = 1;
     public static final int STATE_FINISHED = 2;
 
-    private static final Interpolator INTERPOLATOR = new AccelerateInterpolator();
+    private static final Interpolator interpolator = new AccelerateInterpolator();
     private static final int FILL_TIME = 500;
 
     private int state = STATE_NOT_STARTED;
@@ -73,7 +76,7 @@ public class RevealBackgroundView extends View {
         startLocationX = tapLocationOnScreen[0];
         startLocationY = tapLocationOnScreen[1];
         revealAnimator = ObjectAnimator.ofInt(this, "currentRadius", 0, getWidth() + getHeight()).setDuration(FILL_TIME);
-        revealAnimator.setInterpolator(INTERPOLATOR);
+        revealAnimator.setInterpolator(interpolator);
         revealAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
