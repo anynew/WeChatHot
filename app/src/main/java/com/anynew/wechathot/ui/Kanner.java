@@ -7,6 +7,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.anynew.wechathot.R;
 import com.bumptech.glide.Glide;
@@ -26,6 +29,8 @@ import java.util.List;
 public class Kanner extends FrameLayout {
     private int count;
     private List<ImageView> imageViews;
+    private List<TextView> imageViewTxts;
+    private List<FrameLayout> listViews;
     private Context context;
     private ViewPager vp;
     private boolean isAutoPlay;
@@ -34,6 +39,8 @@ public class Kanner extends FrameLayout {
     private LinearLayout ll_dot;
     private List<ImageView> iv_dots;
     private Handler handler = new Handler();
+    private String TAG = "Kanner";
+    private List<String> textsUrl;
 
     public Kanner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -50,7 +57,8 @@ public class Kanner extends FrameLayout {
     }
 
     private void initData() {
-        imageViews = new ArrayList<ImageView>();
+        imageViews = new ArrayList<>();
+        imageViewTxts = new ArrayList<>();
         iv_dots = new ArrayList<ImageView>();
         delayTime = 2000;
     }
@@ -70,18 +78,31 @@ public class Kanner extends FrameLayout {
 
     private void initLayout() {
         imageViews.clear();
+        imageViewTxts.clear();
+
+        /*View viewLayout = LayoutInflater.from(context).inflate(
+                R.layout.item_pager_layout,this,true);
+        mImgPager = (ImageView)viewLayout.findViewById(R.id.mImgPager);
+        mTvPager = (TextView)viewLayout.findViewById(R.id.mTvPager);
+        mFrameLayout = new FrameLayout(context);*/
+
         View view = LayoutInflater.from(context).inflate(
                 R.layout.kanner_layout, this, true);
         vp = (ViewPager) view.findViewById(R.id.vp);
         ll_dot = (LinearLayout) view.findViewById(R.id.ll_dot);
         ll_dot.removeAllViews();
+        /////
+
     }
 
+    /**
+     *  从资源文件初始化图片
+     * @param imagesRes
+     */
     private void initImgFromRes(int[] imagesRes) {
         count = imagesRes.length;
         for (int i = 0; i < count; i++) {
             ImageView iv_dot = new ImageView(context);
-
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -110,7 +131,13 @@ public class Kanner extends FrameLayout {
 
     }
 
+    /**
+     * 从网络初始化图片
+     * @param imagesUrl
+     * @param textsUrl
+     */
     private void initImgFromNet(String[] imagesUrl,List<String> textsUrl) {
+        this.textsUrl = textsUrl;
         count = imagesUrl.length;
         for (int i = 0; i < count; i++) {
             ImageView iv_dot = new ImageView(context);
@@ -122,40 +149,51 @@ public class Kanner extends FrameLayout {
             iv_dot.setImageResource(R.mipmap.dot_blur);
             ll_dot.addView(iv_dot, params);
             iv_dots.add(iv_dot);
+
         }
         iv_dots.get(0).setImageResource(R.mipmap.dot_focus);
 
+        //添加网络资源url
         for (int i = 0; i <= count + 1; i++) {
-            //添加图片
             ImageView iv = new ImageView(context);
+            TextView tv  = new TextView(context);
 
             iv.setScaleType(ScaleType.FIT_XY);
-
 
             if (i == 0) {
                 Glide.with(context)
                         .load(imagesUrl[count -1])
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
+                tv.setText(textsUrl.get(count - 1));
+
             } else if (i == count + 1) {
                 Glide.with(context)
                         .load(imagesUrl[0])
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
+                tv.setText(textsUrl.get(0));
 
             } else {
                 Glide.with(context)
                         .load(imagesUrl[i -1])
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
-
+                tv.setText(textsUrl.get(i - 1));
             }
+
             imageViews.add(iv);
+            imageViewTxts.add(tv);
+
+
         }
     }
 
     private void initDescribeFromNet(String[] textUrl){
         count = textUrl.length;
+        for (int i = 0; i < count; i++) {
+
+        }
     }
 
     private void showTime() {
@@ -173,6 +211,9 @@ public class Kanner extends FrameLayout {
         handler.postDelayed(task, 2000);
     }
 
+    /**
+     * 定时任务
+     */
     private final Runnable task = new Runnable() {
 
         @Override
@@ -192,10 +233,14 @@ public class Kanner extends FrameLayout {
         }
     };
 
+    /**
+     * viewpager的适配器
+     */
     class KannerPagerAdapter extends PagerAdapter {
 
         @Override
         public int getCount() {
+            Log.e(TAG, "listViews Size: "+  imageViews.size() );
             return imageViews.size();
         }
 
@@ -207,12 +252,14 @@ public class Kanner extends FrameLayout {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             container.addView(imageViews.get(position));
+            container.addView(imageViewTxts.get(position));
             return imageViews.get(position);
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView(imageViews.get(position));
+            container.removeView(imageViewTxts.get(position));
         }
 
     }
@@ -242,15 +289,19 @@ public class Kanner extends FrameLayout {
 
         @Override
         public void onPageScrolled(int arg0, float arg1, int arg2) {
+
         }
 
         @Override
         public void onPageSelected(int arg0) {
+
             for (int i = 0; i < iv_dots.size(); i++) {
                 if (i == arg0 - 1) {
                     iv_dots.get(i).setImageResource(R.mipmap.dot_focus);
+
                 } else {
                     iv_dots.get(i).setImageResource(R.mipmap.dot_blur);
+
                 }
             }
         }

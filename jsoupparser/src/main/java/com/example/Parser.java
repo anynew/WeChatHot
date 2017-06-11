@@ -16,43 +16,30 @@ public class Parser {
         try {
             document = Jsoup.connect(url).get();
 
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-        getHomeSource().getListViews();
+        getBannerSource().getListTitle();
+//        getHomeSource().getListFrom();
     }
 
-    private static PicSource getSource(){
+    private static PicSource getBannerSource(){
 
-        Elements urlLink;
-        Elements urlTitle;
-        Elements urlImg;
-        Elements urlSorcre;
-        Elements urlTime;
+        Elements urlTitle = document.select(".text p"); //Banner标题
+        Elements urlImage = document.select(".sd-slider-item img"); // Banner图片
+        Elements urlLink = document.select(".sd-slider-item");// Banner 链接
 
-        urlLink = document.select(".tabcontant a");
-        urlTitle = document.select(".wx-topbpx h3 a");
-        urlImg = document.select(".tabcontant a img");
-        urlSorcre = document.select(".wx-topbpx span a");
-        urlTime = document.select(".wx-topbpx span");
+        for (int i = 0; i < urlTitle.size(); i++) {
+            System.out.println(urlTitle.get(i).attr("title"));
+            System.out.println(urlImage.get(i).attr("src"));
+            System.out.println(urlLink.get(i).attr("href"));
+        }
 
         List<String>  listTitle = new ArrayList<>();    //标题
         List<String>  listLink = new ArrayList<>();     //链接
         List<String>  listImg = new ArrayList<>();      //图片地址
-        List<String>  listSource = new ArrayList<>();   //新闻源
-        List<String>  listTime = new ArrayList<>();     //时间
 
-        for (int i = 0; i < 5; i++) {
-            listTitle.add(urlTitle.get(i).text());
-            listLink.add(urlLink.get(i).absUrl("href"));
-            listImg.add(urlImg.get(i).attr("src"));
-            listSource.add(urlSorcre.get(i).attr("title"));
-            listTime.add(urlTime.get(i).ownText());
-        }
-
-        PicSource ps = new PicSource(listTitle,listLink,listImg,listSource,listTime);
+        PicSource ps = new PicSource(listTitle,listLink,listImg);
         return ps;
     }
 
@@ -61,44 +48,41 @@ public class Parser {
      * @return
      */
     private static HomeSource getHomeSource(){
-        Elements urlTitle;
-        Elements urlViews;
-        Elements urlIllustrator;
-        Elements urlFrom;
+        Elements urlTitle;  // 新闻标题
+        Elements urlGoto;   // 新闻超链接
+        Elements urlFrom;   // 新闻出处
+        Elements urlIllustrator; //新闻配图
 
-        urlTitle = document.select(".wx-news-info2 h4 a");
-        urlIllustrator = document.select(".wx-img-box img");
-        urlViews = document.select(".s-p");
-        urlFrom = document.select(".pos-wxrw a");
+        urlTitle = document.select(".txt-box h3");
+        urlGoto = document.select(".txt-box h3 a");
+        urlFrom = document.select(".account");
+        urlIllustrator = document.select(".news-box a img");
 
         List<String>  listTitle = new ArrayList<>();    //列表标题
         List<String>  listGoto = new ArrayList<>();    //列表链接
-        List<String>  listViews = new ArrayList<>();    //列表内容
-        List<String>  listIllustrator = new ArrayList<>();    //列表插图
         List<String>  listFrom = new ArrayList<>();    //列表来源
+        List<String>  listIllustrator = new ArrayList<>();    //列表插图
 
         for (int i = 0; i < urlTitle.size(); i++) {
 
-            String title = urlTitle.get(i).ownText();
+            String title = urlTitle.get(i).text();
+            System.out.println(title);
             listTitle.add(title);
 
-            String link = urlTitle.get(i).attr("href");
+            String link = urlGoto.get(i).attr("href");
+            System.out.println(link);
             listGoto.add(link);
 
-            String views = urlViews.get(i).ownText();
-            listViews.add(views);
-
-            String illustrator = urlIllustrator.get(i).attr("src");
-            listIllustrator.add(illustrator);
-
-            urlFrom.remove(i +1);
-            String from = urlFrom.get(i).text();
+            String from = urlFrom.get(i).ownText();
+            System.out.println(from);
             listFrom.add(from);
 
-            System.out.println(views);
+            String illustrator = urlIllustrator.get(i).attr("src");
+            System.out.println("img = "+ illustrator);
+            listIllustrator.add(illustrator);
         }
 
-        HomeSource homeSource = new HomeSource(listTitle,listFrom,listIllustrator,listGoto,listViews);
+        HomeSource homeSource = new HomeSource(listTitle,listGoto,listFrom,listIllustrator);
         return  homeSource;
     }
 }

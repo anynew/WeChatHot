@@ -165,7 +165,7 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
      */
     private void initRecycler(final Parser parser) {
         final HomeSource homeSource = parser.getHomeSource();
-        final PicSource picSource = parser.getPicSource();
+        final PicSource picSource = parser.getBannerSource();
 
         mRecycleView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecycleView.setNestedScrollingEnabled(false);
@@ -174,9 +174,9 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         mAdapter = new CommonAdapter<String>(getActivity(), R.layout.item_layout_home_list, homeSource.getListTitle()) {
             @Override
             protected void convert(ViewHolder holder, String s, final int position) {
-                holder.setText(R.id.mTitle, homeSource.getListTitle().get(position - 1));
-                holder.setText(R.id.mViews, homeSource.getListViews().get(position - 1));
-                holder.setText(R.id.mTvFrom, homeSource.getListFrom().get(position - 1));
+                //由于这里添加了headview，所以position位置需要-1
+                holder.setText(R.id.mTitle, homeSource.getListTitle().get(position-1 ));
+                holder.setText(R.id.mTvFrom, homeSource.getListFrom().get(position-1));
                 holder.setOnClickListener(R.id.mItem, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -186,7 +186,7 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                 });
                 ImageView iv = holder.getView(R.id.mIllustrator);
                 Glide.with(getActivity())
-                        .load(homeSource.getListIllustrator().get(position - 1))
+                        .load(homeSource.getListIllustrator().get(position-1))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(iv);
             }
@@ -194,9 +194,11 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         //设置HeadView
         View headView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_headview, null);
         Kanner kanner = (Kanner) headView.findViewById(R.id.kanner);
-        List<String> imgUrl = picSource.getListImg();
         List<String> listTitle = picSource.getListTitle();
-        String[] urls = imgUrl.toArray(new String[imgUrl.size()]);
+        List<String> listLink = picSource.getListLink();
+        List<String> listImg = picSource.getListImg();
+        Log.e(TAG, "banner"+  listImg + "\n" );
+        String[] urls = listImg.toArray(new String[listImg.size()]);
         kanner.setImagesUrl(urls, listTitle);
 
         //设置LoadMore
@@ -214,8 +216,8 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         mEmptyWrapper.notifyDataSetChanged();
 
         //添加分割线
-        mRecycleView.addItemDecoration(new DividerItemDecoration(
-                getActivity(), DividerItemDecoration.VERTICAL_LIST));
+//        mRecycleView.addItemDecoration(new DividerItemDecoration(
+//                getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
     }
 
