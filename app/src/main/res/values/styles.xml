@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+
         <!--导航栏上的标题颜色-->
         <!--<item name="android:textColorPrimary">@android:color/black</item>-->
         <!--Activity窗口的颜色-->
@@ -20,5 +21,17 @@
         <!--<item name="android:textColorHint">@color/hint_foreground_material_dark</item>-->
     </style>
 
+    <style name="AppTheme.TransparentActivity" parent="AppTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="MyToolbarTextStyle" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="MyToolbarTextStyleZoom" parent="@android:style/TextAppearance.DeviceDefault">
+        <item name="android:textSize">20sp</item>
+    </style>
 
 </resources>
