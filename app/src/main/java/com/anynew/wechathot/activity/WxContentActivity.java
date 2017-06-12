@@ -19,7 +19,6 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
 import com.anynew.wechathot.R;
-import com.anynew.wechathot.ui.RevealBackgroundView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -30,7 +29,7 @@ import butterknife.ButterKnife;
  * Created by anynew on 2016/10/22.
  */
 
-public class WxContentActivity extends BaseActivity implements RevealBackgroundView.OnStateChangeListener {
+public class WxContentActivity extends BaseActivity {
 
     @Bind(R.id.mWebview)
     WebView mWebview;
@@ -44,8 +43,6 @@ public class WxContentActivity extends BaseActivity implements RevealBackgroundV
     AppBarLayout mAppBarLayout;
     @Bind(R.id.mNestedScrollView)
     NestedScrollView mNestedScrollView;
-    @Bind(R.id.revealBackgroundView)
-    RevealBackgroundView vRevealBackground;
 
     private String TAG = this.getClass().getSimpleName();
 
@@ -62,7 +59,6 @@ public class WxContentActivity extends BaseActivity implements RevealBackgroundV
         initToolBar();
         initTopImg();
         initWeb();
-        setupRevealBackground(savedInstanceState);
 
     }
 
@@ -72,7 +68,9 @@ public class WxContentActivity extends BaseActivity implements RevealBackgroundV
     private void initToolBar() {
         setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         mToolBar.setTitle(getIntent().getStringExtra("source"));
+        Log.e(TAG, "source: "+    getIntent().getStringExtra("source"));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,9 +86,9 @@ public class WxContentActivity extends BaseActivity implements RevealBackgroundV
      * 设置ToolBar背景图片
      */
     private void initTopImg() {
+        Log.e(TAG, "img: " +getIntent().getStringExtra("img"));
         Glide.with(this)
                 .load(getIntent().getStringExtra("img"))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mTopImg);
     }
 
@@ -115,24 +113,6 @@ public class WxContentActivity extends BaseActivity implements RevealBackgroundV
         Log.e(TAG, "urlLink: " + urlLink);
     }
 
-    private void setupRevealBackground(Bundle savedInstanceState) {
-        vRevealBackground.setOnStateChangeListener(this);
-        if (savedInstanceState == null) {
-            final int[] startingLocation = getIntent().getIntArrayExtra("start_location");
-            vRevealBackground.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    vRevealBackground.getViewTreeObserver().removeOnPreDrawListener(this);
-                    vRevealBackground.startFromLocation(startingLocation);
-                    return true;
-                }
-            });
-        } else {
-            vRevealBackground.setToFinishedFrame();
-        }
-    }
-
-
     @TargetApi(21)
     private void setStatusBarColor(int statusBarColor) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -145,14 +125,6 @@ public class WxContentActivity extends BaseActivity implements RevealBackgroundV
                 window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             }
             window.setStatusBarColor(statusBarColor);
-        }
-    }
-
-    @Override
-    public void onStateChange(int state) {
-        if (RevealBackgroundView.STATE_FINISHED == state) {
-            mAppBarLayout.setVisibility(View.VISIBLE);
-            setStatusBarColor(Color.TRANSPARENT);
         }
     }
 

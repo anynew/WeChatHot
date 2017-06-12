@@ -21,14 +21,17 @@ import android.widget.Toast;
 import com.anynew.wechathot.R;
 import com.anynew.wechathot.activity.WxContentActivity;
 import com.anynew.wechathot.adapter.DividerItemDecoration;
+import com.anynew.wechathot.model.GlideImageLoader;
 import com.anynew.wechathot.model.HomeSource;
 import com.anynew.wechathot.model.PicSource;
 import com.anynew.wechathot.parser.Parser;
-import com.anynew.wechathot.ui.Kanner;
 import com.anynew.wechathot.utils.NetUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.ybq.android.spinkit.SpinKitView;
+import com.youth.banner.Banner;
+import com.youth.banner.BannerConfig;
+import com.youth.banner.listener.OnBannerListener;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 import com.zhy.adapter.recyclerview.wrapper.EmptyWrapper;
@@ -179,9 +182,18 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
                 holder.setText(R.id.mTvFrom, homeSource.getListFrom().get(position-1));
                 holder.setOnClickListener(R.id.mItem, new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
+                        public void onClick(View v) {
                         onNotifyListener.onSnack(0,"pos = "+(position-1));
-                        Intent intent = new Intent(getActivity(), WxContentActivity.class);
+                        Intent it = new Intent(getActivity(), WxContentActivity.class);
+
+                   /*     int[] startingLocation = new int[2];
+                        v.getLocationOnScreen(startingLocation);
+                        startingLocation[0] += v.getWidth() / 2;*/
+
+                        it.putExtra("urlLink",homeSource.getListGoto().get(position-1));
+                        it.putExtra("img",homeSource.getListIllustrator().get(position-1));
+                        it.putExtra("source",homeSource.getListTitle().get(position-1));
+                        startActivity(it);
                     }
                 });
                 ImageView iv = holder.getView(R.id.mIllustrator);
@@ -193,15 +205,31 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         };
         //设置HeadView
         View headView = LayoutInflater.from(getActivity()).inflate(R.layout.layout_headview, null);
-        Kanner kanner = (Kanner) headView.findViewById(R.id.kanner);
-        List<String> listTitle = picSource.getListTitle();
-        List<String> listLink = picSource.getListLink();
-        List<String> listImg = picSource.getListImg();
-        Log.e(TAG, "banner"+  listImg + "\n" );
-        String[] urls = listImg.toArray(new String[listImg.size()]);
-        kanner.setImagesUrl(urls, listTitle);
+        Banner banner = (Banner)headView.findViewById(R.id.banner);
+        final List<String> listTitle = picSource.getListTitle();
+        final List<String> listLink = picSource.getListLink();
+        final List<String> listImg = picSource.getListImg();
+        banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE_INSIDE);
+        banner.update(listImg,listTitle);
+        //设置轮播间隔时间
+        banner.setDelayTime(5000);
+        banner.setImageLoader(new GlideImageLoader());
+        //banner设置方法全部调用完毕时最后调用
+        banner.start();
+        banner.setOnBannerListener(new OnBannerListener() {
+            @Override
+            public void OnBannerClick(int position) {
+                Intent it = new Intent(getActivity(),WxContentActivity.class);
+                it.putExtra("urlLink",listLink.get(position));
+                it.putExtra("img",listImg.get(position));
+                it.putExtra("source",listTitle.get(position));
+                startActivity(it);
+            }
+        });
 
-        //设置LoadMore
+        /**
+         *
+         */
         View loadMore = LayoutInflater.from(getActivity()).inflate(R.layout.layout_loadmore, null);
         SpinKitView mProgressBar = (SpinKitView) loadMore.findViewById(R.id.mProgressBar);
 
@@ -215,9 +243,6 @@ public class TabFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         mRecycleView.setAdapter(mEmptyWrapper);
         mEmptyWrapper.notifyDataSetChanged();
 
-        //添加分割线
-//        mRecycleView.addItemDecoration(new DividerItemDecoration(
-//                getActivity(), DividerItemDecoration.VERTICAL_LIST));
 
     }
 

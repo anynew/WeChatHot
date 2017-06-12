@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="160dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -11,10 +12,14 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
-        <com.anynew.wechathot.ui.Kanner
-            android:id="@+id/kanner"
+        <com.youth.banner.Banner
+            app:indicator_margin="3dp"
+            app:indicator_height="6dp"
+            app:indicator_width="6dp"
+            android:id="@+id/banner"
+            app:indicator_drawable_selected="@drawable/shape_circle_dot"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="300dp" />
 
 
     </RelativeLayout>
